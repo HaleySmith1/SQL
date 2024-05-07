@@ -1,3 +1,4 @@
+Below is the coding for a Superstore table:
 CREATE TABLE superstore (
     item_id INTEGER PRIMARY KEY,
     item_name TEXT,
@@ -26,7 +27,7 @@ VALUES
     (15, 'Cozy Throw Blanket', 'Furnishings', 24.99, 100, 4.2);
 
 
-SQL CODING
+Below is the SQL coding I did on the Superstore.
 -- SQL query that orders the items by price
 SELECT item_name, price
 FROM superstore
