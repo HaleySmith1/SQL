@@ -1,6 +1,6 @@
-
+I like to select the entire chart and limit to 5 rows to get a visual of what the chart looks like before querying the data. 
 --How many orders were placed in January?
-SELECT * FROM JanSales LIMIT 5;
+SELECT * FROM JanSales LIMIT 5; 
 
 SELECT COUNT(orderid)
 FROM BIT_DB.JanSales
