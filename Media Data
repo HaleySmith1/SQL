@@ -1,0 +1,112 @@
+#The following are questions regarding a large set of data based on media purchases. 
+#This data set is the final SQL project from the Breaking Into Tech certification course. 
+#Below is how I analyzed the Media Data set. 
+
+--#1 What customers (full name, ID, and country) are not in the US. 
+SELECT customers.FirstName, customers.LastName, customers.Country, customers.CustomerId
+FROM customers
+WHERE Country <> 'USA';
+
+--#2 What customers are from Brazil? 
+SELECT customers.FirstName, customers.LastName
+FROM customers
+WHERE Country ='Brazil'
+
+--#3 Find the invoices of customers who are from Brazil. 
+--Include full name, Invoice ID, Date of invoice, and billing country.
+SELECT * FROM Customers
+SELECT * FROM Invoices
+
+SELECT Invoices.InvoiceId, Invoices.InvoiceDate, Invoices.BillingCountry, Customers.FirstName
+, Customers.LastName
+FROM Invoices
+LEFT JOIN Customers
+ON Invoices.CustomerId=Customers.CustomerId
+WHERE Customers.Country='Brazil'
+
+
+--#4 Show the employees who are Sales Agents. 
+SELECT * FROM employees
+
+SELECT FirstName, LastName, Title
+FROM employees
+WHERE Title= 'Sales Support Agent'
+
+--#5 Find a unique/distinct list of billing countries from the Invoice table. 
+SELECT DISTINCT BillingCountry 
+FROM Invoices;
+
+--#6 What invoices are associated with each sales agent? 
+--Include Sales Agent's full name. 
+--I had to Query a couple of the tables to know which tables I exactly needed to query and how to inner join the tables needed to answer this question.
+SELECT * FROM Invoices
+SELECT * FROM employees
+SELECT * FROM invoice_items
+SELECT * FROM customers
+
+SELECT employees.FirstName, employees.LastName, invoices.InvoiceId
+FROM ((employees 
+INNER JOIN customers ON customers.SupportRepId=employees.EmployeeId)
+INNER JOIN invoices ON invoices.CustomerId=customers.CustomerId);
+
+--#7 Show the Invoice Total, Customer name, Country, and Sales Agent name for all invoices and customers. 
+SELECT customers.FirstName C_FirstName
+, Customers.LastName C_LastName
+, employees.FirstName SA_FirstName
+, employees.LastName  SA_LastName
+, invoices.Total
+, invoices.BillingCountry
+FROM ((employees 
+INNER JOIN customers ON customers.SupportRepId=employees.EmployeeId)
+INNER JOIN invoices ON invoices.CustomerId=customers.CustomerId)
+
+--#8 How many Invoices were there in 2009?
+SELECT * FROM invoices;
+
+SELECT count(invoices.InvoiceId) AS Total_Invoice_2009
+FROM invoices
+WHERE InvoiceDate LIKE '%2009%';
+
+--#9 What are the total sales for 2009?
+SELECT * FROM invoices;
+
+SELECT SUM(Total) AS Total_2009_Sales
+FROM invoices
+WHERE InvoiceDate LIKE '%2009%';
+
+--#10 Write a query that includes the purchased track name with each invoice line ID.
+SELECT invoice_items.InvoiceId, tracks.Name
+FROM tracks
+INNER JOIN invoice_items 
+ON tracks.TrackId=invoice_items.TrackId;
+
+--#11 Write a query that includes the purchased track name AND artist name with each invoice line ID.
+SELECT invoice_items.InvoiceLineId, tracks.Name AS Track_Name, artists.Name AS Artist_Name
+FROM invoice_items
+INNER JOIN tracks ON tracks.TrackId=invoice_items.TrackId
+INNER JOIN albums ON albums.AlbumId=tracks.TrackId
+INNER JOIN artists ON artists.ArtistId=albums.AlbumId;
+
+--#12 Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+SELECT tracks.Name AS Track, media_types.Name AS media, genres.Name AS Genre, albums.Title AS Album
+FROM albums
+INNER JOIN tracks ON albums.AlbumId=tracks.AlbumId
+INNER JOIN media_types ON media_types.MediaTypeId=tracks.MediaTypeId
+INNER JOIN genres ON genres.GenreId=tracks.GenreId;
+
+
+--#13 Show the total sales made by each sales agent.
+SELECT employees.LastName AS Sales_Agent, ROUND(SUM(invoices.Total), 2) AS Total_Sales 
+FROM employees
+INNER JOIN customers ON customers.SupportRepId=employees.EmployeeId
+INNER JOIN invoices ON invoices.CustomerId=customers.CustomerId
+GROUP BY Sales_Agent;
+
+--#14 Which sales agent made the most dollars in sales in 2009?
+SELECT employees.LastName AS Sales_Agent, ROUND(SUM(invoices.Total),2) AS Total_Sales 
+FROM employees
+INNER JOIN customers ON customers.SupportRepId=employees.EmployeeId
+INNER JOIN invoices ON invoices.CustomerId=customers.CustomerId
+WHERE invoices.InvoiceDate LIKE '%2009%'
+GROUP BY Sales_Agent
+ORDER BY Total_Sales DESC;
